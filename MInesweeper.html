@@ -2,22 +2,89 @@
 <html>
 <head>
     <title>Minesweeper</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
             margin: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background 0.3s;
         }
 
+        /* Light Theme (default) */
+        body.light-theme {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .light-theme .menu-container,
+        .light-theme .game-container,
+        .light-theme .end-menu {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .light-theme .cell {
+            background-color: #bbb;
+        }
+
+        .light-theme .cell.revealed {
+            background-color: #eee;
+        }
+
+        .light-theme .cell.mine {
+            background-color: #ff4444;
+        }
+
+        .light-theme .cell.flagged {
+            background-color: #ffff99;
+        }
+
+        .light-theme .grid {
+            background-color: #ccc;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .dark-theme .menu-container,
+        .dark-theme .game-container,
+        .dark-theme .end-menu {
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+        }
+
+        .dark-theme .cell {
+            background-color: #444;
+        }
+
+        .dark-theme .cell.revealed {
+            background-color: #666;
+        }
+
+        .dark-theme .cell.mine {
+            background-color: #ff4444;
+        }
+
+        .dark-theme .cell.flagged {
+            background-color: #ffd700;
+        }
+
+        .dark-theme .grid {
+            background-color: #333;
+        }
+
+        /* Common Styles */
         .menu-container, .game-container, .end-menu {
             font-family: Arial, sans-serif;
-            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, color 0.3s;
         }
 
         .menu-container {
@@ -51,35 +118,36 @@
             display: flex;
             gap: 20px;
             margin: 10px;
+            align-items: center;
         }
         
         .grid {
             display: grid;
             gap: 1px;
-            background-color: #ccc;
             padding: 1px;
+            transition: background 0.3s;
         }
         
         .cell {
             width: 25px;
             height: 25px;
-            background-color: #bbb;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             user-select: none;
             font-size: 14px;
+            transition: background 0.3s;
         }
         
         .cell.revealed {
             background-color: #eee;
         }
-        
+
         .cell.mine {
             background-color: #ff4444;
         }
-        
+
         .cell.flagged {
             background-color: #ffff99;
         }
@@ -102,9 +170,74 @@
             padding: 5px;
             font-size: 16px;
         }
+
+        /* Theme Switch Styles */
+        .theme-switch-wrapper {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "🌞"; /* Эмодзи солнца для светлой темы */
+            height: 24px;
+            width: 24px;
+            left: 8px;
+            bottom: 8px;
+            transition: 0.4s;
+            font-size: 20px; /* Увеличим размер для лучшей видимости */
+            line-height: 24px;
+            text-align: center;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            content: "🌙"; /* Эмодзи полумесяца для тёмной темы */
+            transform: translateX(38px);
+        }
     </style>
 </head>
-<body>
+<body class="light-theme">
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
     <div id="menu" class="menu-container">
         <h1>Minesweeper</h1>
         <select id="size-select">
@@ -113,6 +246,7 @@
             <option value="20">20x20 (80 mines)</option>
         </select>
         <button onclick="startGame()">Play</button>
+        <a href="https://emptyarclight.store" class="menu-button">Back to Main Menu</a>
     </div>
 
     <div id="game" class="game-container">
@@ -133,6 +267,7 @@
         let MINE_COUNT = 10;
         let grid = [];
         let gameOver = false;
+        let currentTheme = 'light';
 
         function startGame() {
             document.getElementById('menu').style.display = 'none';
@@ -322,8 +457,25 @@
         function goToMenu() {
             document.getElementById('game').style.display = 'none';
             document.getElementById('menu').style.display = 'flex';
-            gameOver = false; // Reset game state
+            gameOver = false;
         }
+
+        function toggleTheme() {
+            const body = document.body;
+            const checkbox = document.getElementById('theme-switch');
+            if (checkbox.checked) {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                currentTheme = 'dark';
+            } else {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                currentTheme = 'light';
+            }
+        }
+
+        // Set initial state
+        document.getElementById('theme-switch').checked = false;
     </script>
 </body>
 </html>
