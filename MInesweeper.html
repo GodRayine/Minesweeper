@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Minesweeper</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
     <style>
         body {
             margin: 0;
@@ -138,6 +140,18 @@
             transition: background 0.3s;
         }
         
+        .cell.revealed {
+            background-color: #eee;
+        }
+
+        .cell.mine {
+            background-color: #ff4444;
+        }
+
+        .cell.flagged {
+            background-color: #ffff99;
+        }
+        
         button {
             padding: 10px 20px;
             cursor: pointer;
@@ -165,21 +179,13 @@
             display: flex;
             align-items: center;
             z-index: 20;
-            font-family: Arial, sans-serif;
-        }
-
-        .theme-switch-wrapper span {
-            margin: 0 10px;
-            font-size: 14px;
-            color: #fff;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5); /* For readability on gradients */
         }
 
         .theme-switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 80px;
+            height: 40px;
         }
 
         .theme-switch input {
@@ -197,19 +203,21 @@
             bottom: 0;
             background-color: #ccc;
             transition: 0.4s;
-            border-radius: 34px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .slider:before {
             position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
+            content: "🌞"; /* Эмодзи солнца для светлой темы */
+            height: 24px;
+            width: 24px;
+            left: 8px;
+            bottom: 8px;
             transition: 0.4s;
-            border-radius: 50%;
+            font-size: 20px; /* Увеличим размер для лучшей видимости */
+            line-height: 24px;
+            text-align: center;
         }
 
         input:checked + .slider {
@@ -217,18 +225,17 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(26px);
+            content: "🌙"; /* Эмодзи полумесяца для тёмной темы */
+            transform: translateX(38px);
         }
     </style>
 </head>
 <body class="light-theme">
     <div class="theme-switch-wrapper">
-        <span>Light</span>
         <label class="theme-switch">
             <input type="checkbox" id="theme-switch" onchange="toggleTheme()">
             <span class="slider"></span>
         </label>
-        <span>Dark</span>
     </div>
 
     <div id="menu" class="menu-container">
@@ -239,6 +246,7 @@
             <option value="20">20x20 (80 mines)</option>
         </select>
         <button onclick="startGame()">Play</button>
+        <a href="https://emptyarclight.store" class="menu-button">Back to Main Menu</a>
     </div>
 
     <div id="game" class="game-container">
