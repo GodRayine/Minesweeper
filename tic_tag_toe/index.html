@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe (Single Player)</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        /* Light Theme (default) */
+        body.light-theme {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .light-theme .menu-container,
+        .light-theme .game-container,
+        .light-theme .end-menu {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .light-theme .cell {
+            background-color: #bbb;
+        }
+
+        .light-theme .cell:hover {
+            background-color: #aaa;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .dark-theme .menu-container,
+        .dark-theme .game-container,
+        .dark-theme .end-menu {
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+        }
+
+        .dark-theme .cell {
+            background-color: #444;
+        }
+
+        .dark-theme .cell:hover {
+            background-color: #555;
+        }
+
+        /* Common Styles */
+        .menu-container, .game-container {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu-container {
+            gap: 20px;
+        }
+
+        .game-container {
+            display: none;
+            position: relative;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .status {
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .end-menu {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            width: 300px;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin: 10px;
+            align-items: center;
+        }
+
+        /* Theme Switch Styles */
+        .theme-switch-wrapper {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "🌞";
+            height: 24px;
+            width: 24px;
+            left: 8px;
+            bottom: 8px;
+            transition: 0.4s;
+            font-size: 20px;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            content: "🌙";
+            transform: translateX(38px);
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div id="menu" class="menu-container">
+        <h1>Tic Tac Toe</h1>
+        <button onclick="startGame()">Play</button>
+        <a href="https://gordry.ru" class="menu-button">Back to Main Menu</a>
+    </div>
+
+    <div id="game" class="game-container">
+        <div class="status" id="status">Your turn (X)</div>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="controls">
+            <button onclick="restartGame()">Restart Game</button>
+            <button onclick="goToMenu()">Back to Menu</button>
+        </div>
+        <div id="end-menu" class="end-menu">
+            <h2 id="end-message"></h2>
+            <button onclick="restartGame()">Play Again</button>
+            <button onclick="goToMenu()">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let playerCanMove = true;
+        const player = 'X';
+        const ai = 'O';
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.addEventListener('click', handlePlayerClick);
+        });
+
+        function startGame() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game').style.display = 'flex';
+            restartGame(); // Initialize the game state
+        }
+
+        function goToMenu() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('menu').style.display = 'flex';
+            gameActive = false; // Stop the game
+            playerCanMove = true; // Reset for next game
+        }
+
+        function handlePlayerClick(e) {
+            const cell = e.target;
+            const index = cell.getAttribute('data-index');
+
+            if (!playerCanMove || gameBoard[index] !== '' || !gameActive) return;
+
+            playerCanMove = false;
+            makeMove(index, player);
+            if (gameActive) {
+                setTimeout(aiMove, 500);
+            }
+        }
+
+        function makeMove(index, symbol) {
+            gameBoard[index] = symbol;
+            document.querySelector(`.cell[data-index="${index}"]`).textContent = symbol;
+
+            if (checkWin(symbol)) {
+                showEndMenu(symbol === player ? 'You win!' : 'AI wins!');
+                gameActive = false;
+                playerCanMove = true;
+                return;
+            }
+
+            if (checkDraw()) {
+                showEndMenu("It's a draw!");
+                gameActive = false;
+                playerCanMove = true;
+                return;
+            }
+
+            document.getElementById('status').textContent = 
+                symbol === player ? 'AI is thinking...' : 'Your turn (X)';
+            
+            if (symbol === ai) {
+                playerCanMove = true;
+            }
+        }
+
+        function aiMove() {
+            if (!gameActive) return;
+
+            let availableMoves = gameBoard
+                .map((cell, index) => cell === '' ? index : null)
+                .filter(index => index !== null);
+            
+            if (availableMoves.length > 0) {
+                const randomIndex = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                makeMove(randomIndex, ai);
+            }
+        }
+
+        function checkWin(symbol) {
+            return winningCombinations.some(combination => {
+                return combination.every(index => {
+                    return gameBoard[index] === symbol;
+                });
+            });
+        }
+
+        function checkDraw() {
+            return gameBoard.every(cell => cell !== '');
+        }
+
+        function restartGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            playerCanMove = true;
+            document.getElementById('status').textContent = "Your turn (X)";
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.textContent = '';
+            });
+            hideEndMenu();
+        }
+
+        function showEndMenu(message) {
+            const endMenu = document.getElementById('end-menu');
+            document.getElementById('end-message').textContent = message;
+            endMenu.style.display = 'flex';
+        }
+
+        function hideEndMenu() {
+            document.getElementById('end-menu').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const checkbox = document.getElementById('theme-switch');
+            if (checkbox.checked) {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+            } else {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+            }
+            // Apply theme to both menu and game containers
+            document.getElementById('menu').classList.toggle('light-theme', !checkbox.checked);
+            document.getElementById('menu').classList.toggle('dark-theme', checkbox.checked);
+            document.getElementById('game').classList.toggle('light-theme', !checkbox.checked);
+            document.getElementById('game').classList.toggle('dark-theme', checkbox.checked);
+        }
+
+        // Initial state
+        document.getElementById('menu').style.display = 'flex';
+        document.getElementById('game').style.display = 'none';
+    </script>
+</body>
+</html>
