@@ -1,0 +1,210 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+/* Light Theme */
+body.light-theme {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+.light-theme .menu-container,
+.light-theme .game-container,
+.light-theme .end-menu,
+.light-theme .move-history-container {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+.light-theme .grid { background-color: #ccc; }
+.light-theme .square.light { background-color: #f0d9b5; }
+.light-theme .square.dark { background-color: #b58863; }
+
+/* Dark Theme */
+body.dark-theme {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+.dark-theme .menu-container,
+.dark-theme .game-container,
+.dark-theme .end-menu,
+.dark-theme .move-history-container {
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+}
+.dark-theme .grid { background-color: #333; }
+.dark-theme .square.light { background-color: #e0c9a0; }
+.dark-theme .square.dark { background-color: #8b6f47; }
+
+/* Common Styles */
+.menu-container, .game-container, .end-menu, .move-history-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s, color 0.3s;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.game-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.end-menu {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+    width: 300px;
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+    margin: 10px;
+    align-items: center;
+}
+
+.game-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.chess-container {
+    display: inline-block;
+    position: relative;
+}
+.grid {
+    width: 440px;
+    height: 440px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    /*border: 2px solid #333;*/
+    padding: 1px;
+    gap: 1px;
+    transition: background 0.3s;
+}
+.square {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    cursor: pointer;
+}
+.piece { user-select: none; }
+
+.labels {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #fff;
+    user-select: none;
+}
+.rank-labels {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+.file-labels {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 400px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.move-history-container {
+    width: 200px;
+    height: 400px;
+    overflow-y: auto;
+    margin: 0;
+    font-size: 14px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+button:hover {
+    background-color: #45a049;
+}
+
+/* Theme Switch */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    z-index: 20;
+}
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+}
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.slider:before {
+    position: absolute;
+    content: "🌞";
+    height: 24px;
+    width: 24px;
+    left: 8px;
+    bottom: 8px;
+    transition: 0.4s;
+    font-size: 20px;
+    line-height: 24px;
+    text-align: center;
+}
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+input:checked + .slider:before {
+    content: "🌙";
+    transform: translateX(38px);
+}

@@ -273,6 +273,14 @@
                 </div>
             </a>
 
+            <a href="https://gordry.ru/chess" class="card">
+                <img src=" " class="card-image">
+                <div class="card-content">
+                    <h2 class="card-title">Chess</h2>
+                    <p class="card-description">Мини игра в шахматы от Gordry и Grok</p>
+                </div>
+            </a>
+
             <!-- Сюда можно добавлять новые карточки -->
         </div>
     </main>
